@@ -46,6 +46,7 @@ import java.util.*;
 public final class VoiceAudioCapture implements AudioCapture {
 
     private static final Logger LOGGER = LogManager.getLogger(VoiceAudioCapture.class);
+    private long lastExecutionTime = System.currentTimeMillis();
 
     private final PlasmoVoiceClient voiceClient;
     private final DeviceManager devices;
@@ -388,9 +389,14 @@ public final class VoiceAudioCapture implements AudioCapture {
     }
 
     private void sendVoicePacket(@NotNull ClientActivation activation,
-                                 boolean isStereo,
-                                 byte[] encoded) {
+                                boolean isStereo,
+                                byte[] encoded) {
         if (activation.getTranslation().equals("pv.activation.parent")) return;
+
+        long currentTime = System.currentTimeMillis();
+        long delay = currentTime - lastExecutionTime;
+        System.out.println("Delay between function executions: " + delay + " milliseconds");
+        lastExecutionTime = currentTime;
 
         voiceClient.getUdpClientManager()
                 .getClient()
